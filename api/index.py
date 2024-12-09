@@ -5,13 +5,13 @@ from typing import List, Dict, Any
 import json
 from bson import json_util
 
+app = FastAPI(docs_url="/api/py/docs", openapi_url="/api/py/openapi.json")
 # Conexión a MongoDB Atlas
 mongo_uri = "mongodb://api:Ou0K405SYDy8m5XV@cluster0.6pb8i.mongodb.net/"
 client = MongoClient(mongo_uri)
 db = client["laWiki2"]  # Asegúrate de que esta base de datos exista o cámbiala si es necesario
 pokemon_collection = db["pokemons"]  # Cambia a la colección donde se guardarán los pokémons
 
-app = FastAPI()
 
 # Endpoint para obtener datos de un Pokémon y guardarlos en MongoDB
 @app.get("/pokemon/{pokemon_name}", response_model=Dict[str, Any])
