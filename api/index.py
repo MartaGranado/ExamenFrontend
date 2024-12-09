@@ -39,7 +39,7 @@ async def get_pokemon_data(pokemon_name: str):
         raise HTTPException(status_code=500, detail=f"Error al obtener o guardar datos: {str(e)}")
 
 # Endpoint para obtener todas las wikis desde la base de datos (usando tu código de ejemplo)
-@app.get("/", response_model=List[Dict[str, Any]])
+@app.get("/wikis", response_model=List[Dict[str, Any]])
 async def get_wikis():
     try:
         wikis = db.Wiki.find()
