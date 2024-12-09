@@ -6,7 +6,7 @@ import json
 from bson import json_util
 
 # Conexión a MongoDB Atlas
-mongo_uri = "mongodb+srv://api:Ou0K405SYDy8m5XV@cluster0.6pb8i.mongodb.net/"
+mongo_uri = "mongodb://api:Ou0K405SYDy8m5XV@cluster0.6pb8i.mongodb.net/"
 client = MongoClient(mongo_uri)
 db = client["laWiki2"]  # Asegúrate de que esta base de datos exista o cámbiala si es necesario
 pokemon_collection = db["pokemons"]  # Cambia a la colección donde se guardarán los pokémons
