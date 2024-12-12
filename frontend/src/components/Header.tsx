@@ -7,7 +7,9 @@ export default function Header() {
 
   return (
     <header className="flex justify-between p-4 bg-gray-800 text-white">
+      <Link href="/">
       <h1>Eventual</h1>
+      </Link>
       <Link href={`/log`}>
           <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
             Log

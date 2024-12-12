@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import EventList from "@/components/EventList";
 import Link from "next/link";
+// const Map = dynamic(() => import("@/components/Map"), { ssr: false });
 import dynamic from "next/dynamic";
 
 const Map = dynamic(() => import("@/components/Map"), { ssr: false });
@@ -70,7 +71,8 @@ export default function Home() {
         </button>
         </div>
       </div>
-      
+
+      {/* <Map eventos={eventos} location={location} /> */}
       <Map eventos={eventos} location={location} />
 
       <EventList events={eventos} />

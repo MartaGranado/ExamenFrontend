@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import Evento from "@/models/Evento";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/utils/authOptions";
+import { authOptions } from "@/lib/authOptions";
 import cloudinary from "@/lib/cloudinary";
 
 // export async function GET(request: Request) {

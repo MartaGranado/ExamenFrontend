@@ -83,7 +83,7 @@ export default function EventForm({ evento, isEdit = false }: EventFormProps) {
           onChange={handleChange}
           placeholder="Nombre del evento"
           required
-          className="border p-2 w-full"
+          className="border p-2 w-full text-black"
         />
       </div>
       <div>
@@ -94,7 +94,7 @@ export default function EventForm({ evento, isEdit = false }: EventFormProps) {
           onChange={handleChange}
           placeholder="Dirección del evento"
           required
-          className="border p-2 w-full"
+          className="border p-2 w-full text-black"
         />
       </div>
       <div>
@@ -105,7 +105,7 @@ export default function EventForm({ evento, isEdit = false }: EventFormProps) {
           value={formData.timestamp}
           onChange={handleChange}
           required
-          className="border p-2 w-full"
+          className="border p-2 w-full text-black"
         />
       </div>
       <div>
