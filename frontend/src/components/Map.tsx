@@ -2,7 +2,7 @@
 import "leaflet/dist/leaflet.css";
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
-import { Marker, Popup, TileLayer, MapContainer } from "react-leaflet";
+import { Marker, Popup, TileLayer, MapContainer, useMap } from "react-leaflet";
 import L from "leaflet";
 
 // Cargar el componente dinámicamente para evitar problemas con el lado del servidor
@@ -29,6 +29,14 @@ interface MapProps {
   location: { lat: number; lon: number };
   eventos: Event[];
 }
+
+const RecenterAutomatically = ({location}: {location: {lat: number, lon: number}}) => {
+  const map = useMap();
+   useEffect(() => {
+     map.setView([location.lat, location.lon]);
+   }, [location.lat, location.lon]);
+   return null;
+ }
 
 const EventMap: React.FC<MapProps> = ({ location, eventos }) => {
   const [zoom, setZoom] = useState(13);
@@ -60,6 +68,7 @@ const EventMap: React.FC<MapProps> = ({ location, eventos }) => {
           </Popup>
         </Marker>
       ))}
+       <RecenterAutomatically location={location} />
     </MapContainer>
   );
 };
