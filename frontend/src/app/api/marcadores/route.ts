@@ -38,6 +38,7 @@ export async function POST(request: Request) {
   const formData = await request.formData();
   const nombre = formData.get("nombre")?.toString();
   const lugar = formData.get("lugar")?.toString();
+  const imagen = formData.get("imagen")?.toString(); // Obtener la URL de la imagen
 
   if (!nombre || !lugar) {
     return NextResponse.json({ message: "Faltan campos obligatorios" }, { status: 400 });
@@ -63,6 +64,7 @@ export async function POST(request: Request) {
       lat: parseFloat(lat),
       lon: parseFloat(lon),
       usuario: session.user.email,
+      imagen, // Guardar la URL de la imagen
     });
 
     await nuevoMarcador.save();
