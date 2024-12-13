@@ -1,4 +1,3 @@
-"use client";
 import "leaflet/dist/leaflet.css";
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
@@ -23,11 +22,13 @@ interface Marker {
   lugar: string;
   lat: number;
   lon: number;
+  imagen: string;  // La propiedad de la imagen se agrega aquí
 }
 
 interface MapProps {
   location: { lat: number; lon: number };
   marcadores: Marker[];
+  setSelectedImage: React.Dispatch<React.SetStateAction<string | null>>; // Función para actualizar la imagen seleccionada
 }
 
 // Componente para ajustar automáticamente la vista según los marcadores
@@ -46,7 +47,7 @@ const FitBoundsAutomatically: React.FC<{ markers: Marker[] }> = ({ markers }) =>
   return null;
 };
 
-const MarkerMap: React.FC<MapProps> = ({ location, marcadores }) => {
+const MarkerMap: React.FC<MapProps> = ({ location, marcadores, setSelectedImage }) => {
   const [zoom, setZoom] = useState(13);
 
   useEffect(() => {
@@ -54,6 +55,11 @@ const MarkerMap: React.FC<MapProps> = ({ location, marcadores }) => {
       setZoom(13);
     }
   }, [location]);
+
+  // Maneja el clic en un marcador y establece la imagen correspondiente
+  const handleMarkerClick = (imagen: string) => {
+    setSelectedImage(imagen);  // Actualiza la imagen seleccionada
+  };
 
   return (
     <MapContainer
@@ -68,6 +74,9 @@ const MarkerMap: React.FC<MapProps> = ({ location, marcadores }) => {
           key={marcador._id}
           position={[marcador.lat, marcador.lon]}
           icon={customIcon}
+          eventHandlers={{
+            click: () => handleMarkerClick(marcador.imagen) // Al hacer clic en el marcador, se establece la imagen correspondiente
+          }}
         >
           <Popup>
             <strong>{marcador.nombre}</strong>
