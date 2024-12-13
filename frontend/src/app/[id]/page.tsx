@@ -69,7 +69,7 @@ const EventDetailsPage: React.FC = () => {
       {event ? (
         <div className="border p-4 rounded shadow-md">
           <h1 className="text-2xl font-bold mb-4">{event.nombre}</h1>
-          <Image src={event.imagen} alt={event.nombre} className="mb-4 w-full h-64 object-cover" width={500} height={300}/>
+          <Image src={event.imagen} alt={event.nombre} className="my-4 max-w-full h-auto" width={1000} height={1000}/>
           <p><strong>Fecha y hora:</strong> {new Date(event.timestamp).toLocaleString()}</p>
           <p><strong>Organizador:</strong> {event.organizador}</p>
           <p><strong>Dirección:</strong> {event.lugar}</p>
