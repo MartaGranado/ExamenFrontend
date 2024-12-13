@@ -30,13 +30,21 @@ interface MapProps {
   marcadores: Marker[];
 }
 
-const RecenterAutomatically = ({location}: {location: {lat: number, lon: number}}) => {
+// Componente para ajustar automáticamente la vista según los marcadores
+const FitBoundsAutomatically: React.FC<{ markers: Marker[] }> = ({ markers }) => {
   const map = useMap();
-   useEffect(() => {
-     map.setView([location.lat, location.lon]);
-   }, [location.lat, location.lon]);
-   return null;
- }
+
+  useEffect(() => {
+    if (markers.length > 0) {
+      const bounds = L.latLngBounds(
+        markers.map((marker) => [marker.lat, marker.lon])
+      );
+      map.fitBounds(bounds, { padding: [50, 50] }); // Padding para dar espacio a los marcadores
+    }
+  }, [markers, map]);
+
+  return null;
+};
 
 const MarkerMap: React.FC<MapProps> = ({ location, marcadores }) => {
   const [zoom, setZoom] = useState(13);
@@ -68,7 +76,7 @@ const MarkerMap: React.FC<MapProps> = ({ location, marcadores }) => {
           </Popup>
         </Marker>
       ))}
-       <RecenterAutomatically location={location} />
+      <FitBoundsAutomatically markers={marcadores} />
     </MapContainer>
   );
 };
