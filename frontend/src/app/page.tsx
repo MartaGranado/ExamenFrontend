@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import EventList from "@/components/EventList";
 import Link from "next/link";
-// const Map = dynamic(() => import("@/components/Map"), { ssr: false });
 import dynamic from "next/dynamic";
+// const Map = dynamic(() => import("@/components/Map"), { ssr: false });
 
 const Map = dynamic(() => import("@/components/Map"), { ssr: false });
 
@@ -48,33 +48,36 @@ export default function Home() {
 
   return (
     <div className="flex items-center justify-center h-screen">
-    <div className="p-6 bg-grey-200 shadow-lg rounded-md max-w-lg text-center">
-      <h1 className="text-2xl font-bold mb-4">Buscar Eventos Cercanos</h1>
-      <div className="flex flex-col gap-4">
-        <Link href={`/crear`}>
-          <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
-            Crear
+      <div className="p-6 bg-grey-200 shadow-lg rounded-md max-w-lg text-center ml-4">
+        <h1 className="text-2xl font-bold mb-4">Buscar Eventos Cercanos</h1>
+        <div className="flex flex-col gap-4">
+          <Link href={`/crear`}>
+            <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+              Crear
+            </button>
+          </Link>
+          <input
+            type="text"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            placeholder="Ingresa una dirección"
+            className="border p-2 w-full text-black rounded-md"
+          />
+          <button
+            onClick={handleSearch}
+            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+          >
+            Buscar
           </button>
-        </Link>
-        <input
-          type="text"
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-          placeholder="Ingresa una dirección"
-          className="border p-2 w-full text-black rounded-md"
-        />
-        <button
-          onClick={handleSearch}
-          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-        >
-          Buscar
-        </button>
         </div>
       </div>
 
-      {/* <Map eventos={eventos} location={location} /> */}
-      <Map eventos={eventos} location={location} />
+      {/* Mapa debajo del botón Buscar */}
+      <div className="mt-8 w-full max-w-lg mx-auto">
+        <Map eventos={eventos} location={location} />
+      </div>
 
+      {/* Lista de eventos debajo del mapa */}
       <EventList events={eventos} />
     </div>
   );

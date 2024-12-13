@@ -6,7 +6,7 @@ const EventList: React.FC<{ events: any[] }> = ({ events }) => {
   return (
     <ul>
       {events.map((event) => (
-        <li key={event._id} className="border p-4 mb-2">
+        <li key={event._id} className="border p-4 mb-2 mr-5">
           <h3 className="text-lg font-bold">{event.nombre}</h3>
           <p>Organizador: {event.organizador}</p>
           <p>Fecha: {new Date(event.timestamp).toLocaleString()}</p>
