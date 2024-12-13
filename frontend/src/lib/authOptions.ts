@@ -1,6 +1,5 @@
 import GoogleProvider from "next-auth/providers/google";
 import { connectToDatabase } from "@/lib/mongodb";
-import Log from "@/models/Log";
 import { JWT } from "next-auth/jwt";
 import NextAuth, { DefaultSession, User, Account, Session } from "next-auth";
 
@@ -26,12 +25,6 @@ export const authOptions = {
           // Registrar el login en la base de datos
           const expiresIn = Number(account?.expires_in || 0); // Asegurar que es un número
           const expiration = new Date(Date.now() + expiresIn * 1000);
-          const logEntry = new Log({
-            email: user.email,
-            expiration,
-            token: account?.access_token,
-          });
-          await logEntry.save();
   
           return true;
         } catch (error) {

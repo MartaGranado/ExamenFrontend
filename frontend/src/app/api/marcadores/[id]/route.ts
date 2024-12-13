@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
-import Evento from "@/models/Evento";
+import Marcador from "@/models/LugarVisitado";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import cloudinary from "@/lib/cloudinary";
@@ -8,7 +8,7 @@ import cloudinary from "@/lib/cloudinary";
 async function uploadToCloudinary(file: File): Promise<string> {
   return new Promise(async (resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
-      { folder: "eventual" },
+      { folder: "mimapa" },
       (error, result) => {
         if (error) {
           reject(error);
@@ -27,9 +27,9 @@ export async function GET(request: Request, { params }:  { params: Promise<{id:s
     
   await connectToDatabase();
   
-  const eventos = await Evento.findById(id);
-  console.log(eventos);
-  return NextResponse.json(eventos);
+  const marcadores = await Marcador.findById(id);
+  console.log(marcadores);
+  return NextResponse.json(marcadores);
 }
 
 
@@ -45,21 +45,20 @@ export async function GET(request: Request, { params }:  { params: Promise<{id:s
     const formData = await request.formData();
     const nombre = formData.get("nombre")?.toString();
     const lugar = formData.get("lugar")?.toString();
-    const timestamp = formData.get("timestamp")?.toString();
     const file = formData.get("imagen") as File | null;
   
-    if (!nombre || !lugar || !timestamp) {
+    if (!nombre || !lugar ) {
       return NextResponse.json({ message: "Faltan campos obligatorios" }, { status: 400 });
     }
   
     try {
-      // Buscar el evento actual para verificar al organizador
-      const evento = await Evento.findById(id);
-      if (!evento) {
-        return NextResponse.json({ message: "Evento no encontrado" }, { status: 404 });
+      // Buscar el marcador actual para verificar al organizador
+      const marcador = await Marcador.findById(id);
+      if (!marcador) {
+        return NextResponse.json({ message: "Marcador no encontrado" }, { status: 404 });
       }
   
-      if (evento.organizador !== session.user?.email) {
+      if (marcador.organizador !== session.user?.email) {
         return NextResponse.json({ message: "No autorizado" }, { status: 403 });
       }
   
@@ -72,24 +71,23 @@ export async function GET(request: Request, { params }:  { params: Promise<{id:s
       const lon = parseFloat(geocodeData[0].lon);
   
       // Subir imagen a Cloudinary si hay una nueva imagen
-      let imageUrl = evento.imagen; // Mantener la imagen actual si no se sube una nueva
+      let imageUrl = marcador.imagen; // Mantener la imagen actual si no se sube una nueva
       if (file) {
         imageUrl = await uploadToCloudinary(file);
       }
   
-      // Actualizar el evento
-      evento.nombre = nombre;
-      evento.lugar = lugar;
-      evento.timestamp = timestamp;
-      evento.lat = lat;
-      evento.lon = lon;
-      evento.imagen = imageUrl;
-      await evento.save();
+      // Actualizar el marcador
+      marcador.nombre = nombre;
+      marcador.lugar = lugar;
+      marcador.lat = lat;
+      marcador.lon = lon;
+      marcador.imagen = imageUrl;
+      await marcador.save();
   
-      return NextResponse.json(evento, { status: 200 });
+      return NextResponse.json(marcador, { status: 200 });
     } catch (error) {
-      console.error("Error al actualizar evento:", error);
-      return NextResponse.json({ message: "Error al actualizar el evento" }, { status: 500 });
+      console.error("Error al actualizar marcador:", error);
+      return NextResponse.json({ message: "Error al actualizar el marcador" }, { status: 500 });
     }
   }
 
@@ -102,7 +100,7 @@ export async function GET(request: Request, { params }:  { params: Promise<{id:s
     }
   
     await connectToDatabase();
-    await Evento.findByIdAndDelete(id);
+    await Marcador.findByIdAndDelete(id);
   
-    return NextResponse.json({ message: "Evento eliminado con éxito" });
+    return NextResponse.json({ message: "Marcador eliminado con éxito" });
   }

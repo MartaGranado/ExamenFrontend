@@ -5,28 +5,24 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import Image from 'next/image';
 
-interface Event {
+interface Marker {
   _id?: string; // Campo opcional para soportar edición
   nombre: string;
   lugar: string;
-  timestamp: string;
   imagen: string | null; // URL de la imagen actual
 }
 
-interface EventFormProps {
-  evento?: Event; // El evento puede estar ausente (creación)
+interface MarkerFormProps {
+  marcador?: Marker; // El marcador puede estar ausente (creación)
   isEdit?: boolean; // Indica si es edición
 }
 
-export default function EventForm({ evento, isEdit = false }: EventFormProps) {
+export default function MarkerForm({ marcador, isEdit = false }: MarkerFormProps) {
   const [formData, setFormData] = useState({
-    nombre: evento?.nombre || "",
-    lugar: evento?.lugar || "",
-    timestamp: evento?.timestamp
-      ? new Date(evento.timestamp).toISOString().slice(0, 16)
-      : "",
+    nombre: marcador?.nombre || "",
+    lugar: marcador?.lugar || "",
     imagen: null as File | null,
-    imagenUrl: evento?.imagen || null, // Muestra la imagen actual si existe
+    imagenUrl: marcador?.imagen || null, // Muestra la imagen actual si existe
   });
   const router = useRouter();
 
@@ -47,28 +43,27 @@ export default function EventForm({ evento, isEdit = false }: EventFormProps) {
     const data = new FormData();
     data.append("nombre", formData.nombre);
     data.append("lugar", formData.lugar);
-    data.append("timestamp", formData.timestamp);
     if (formData.imagen) {
       data.append("imagen", formData.imagen);
     }
 
     try {
       if (isEdit) {
-        // Editar evento
-        await axios.patch(`/api/eventos/${evento?._id}`, data, {
+        // Editar marcador
+        await axios.patch(`/api/marcadores/${marcador?._id}`, data, {
           headers: { "Content-Type": "multipart/form-data" },
         });
-        alert("Evento actualizado con éxito");
+        alert("Marcador actualizado con éxito");
       } else {
-        // Crear evento
-        await axios.post("/api/eventos", data, {
+        // Crear marcador
+        await axios.post("/api/marcadores", data, {
           headers: { "Content-Type": "multipart/form-data" },
         });
-        alert("Evento creado con éxito");
+        alert("Marcador creado con éxito");
       }
       router.push("/");
     } catch (error) {
-      console.error(`Error al ${isEdit ? "editar" : "crear"} el evento:`, error);
+      console.error(`Error al ${isEdit ? "editar" : "crear"} el marcador:`, error);
       alert("Hubo un error, por favor inténtalo de nuevo.");
     }
   };
@@ -81,7 +76,7 @@ export default function EventForm({ evento, isEdit = false }: EventFormProps) {
           name="nombre"
           value={formData.nombre}
           onChange={handleChange}
-          placeholder="Nombre del evento"
+          placeholder="Nombre del marcador"
           required
           className="border p-2 w-full text-black"
         />
@@ -92,18 +87,7 @@ export default function EventForm({ evento, isEdit = false }: EventFormProps) {
           name="lugar"
           value={formData.lugar}
           onChange={handleChange}
-          placeholder="Dirección del evento"
-          required
-          className="border p-2 w-full text-black"
-        />
-      </div>
-      <div>
-        <label className="block font-bold">Fecha y hora:</label>
-        <input
-          name="timestamp"
-          type="datetime-local"
-          value={formData.timestamp}
-          onChange={handleChange}
+          placeholder="Dirección del marcador"
           required
           className="border p-2 w-full text-black"
         />
@@ -132,7 +116,7 @@ export default function EventForm({ evento, isEdit = false }: EventFormProps) {
         type="submit"
         className="mt-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
       >
-        {isEdit ? "Guardar cambios" : "Crear evento"}
+        {isEdit ? "Guardar cambios" : "Crear marcador"}
       </button>
     </form>
   );

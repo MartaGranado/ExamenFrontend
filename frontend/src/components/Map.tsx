@@ -17,7 +17,7 @@ const customIcon = new L.Icon({
   iconAnchor: [12, 41],
 });
 
-interface Event {
+interface Marker {
   _id: string;
   nombre: string;
   lugar: string;
@@ -27,7 +27,7 @@ interface Event {
 
 interface MapProps {
   location: { lat: number; lon: number };
-  eventos: Event[];
+  marcadores: Marker[];
 }
 
 const RecenterAutomatically = ({location}: {location: {lat: number, lon: number}}) => {
@@ -38,7 +38,7 @@ const RecenterAutomatically = ({location}: {location: {lat: number, lon: number}
    return null;
  }
 
-const EventMap: React.FC<MapProps> = ({ location, eventos }) => {
+const MarkerMap: React.FC<MapProps> = ({ location, marcadores }) => {
   const [zoom, setZoom] = useState(13);
 
   useEffect(() => {
@@ -55,16 +55,16 @@ const EventMap: React.FC<MapProps> = ({ location, eventos }) => {
       scrollWheelZoom={true}
     >
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      {eventos.map((evento) => (
+      {marcadores.map((marcador) => (
         <Marker
-          key={evento._id}
-          position={[evento.lat, evento.lon]}
+          key={marcador._id}
+          position={[marcador.lat, marcador.lon]}
           icon={customIcon}
         >
           <Popup>
-            <strong>{evento.nombre}</strong>
+            <strong>{marcador.nombre}</strong>
             <br />
-            {evento.lugar}
+            {marcador.lugar}
           </Popup>
         </Marker>
       ))}
@@ -73,4 +73,4 @@ const EventMap: React.FC<MapProps> = ({ location, eventos }) => {
   );
 };
 
-export default EventMap;
+export default MarkerMap;
