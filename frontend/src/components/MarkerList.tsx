@@ -9,31 +9,22 @@ interface Marker {
 }
 
 const MarkerList: React.FC<{ markers: Marker[] }> = ({ markers }) => {
-  const router = useRouter();
-
   const allImages = markers.map((marker) => marker.imagen).filter(Boolean);
 
   return (
     <div>
-      {/* Lista de marcadores con sus imágenes */}
+      {/* Lista de marcadores con su nombre y su imagen */}
       <ul>
         {markers.map((marker) => (
-          <li key={marker._id} className="border p-4 mb-2">
-            <h3 className="text-lg font-bold">{marker.nombre}</h3>
-            <p>Creador: {marker.organizador}</p>
+          <li key={marker._id} className="border p-4 mb-2 flex flex-col items-center">
+            <h3 className="text-lg font-bold mb-2">{marker.nombre}</h3>
             {marker.imagen && (
               <img
                 src={marker.imagen}
                 alt={`${marker.nombre} - Imagen`}
-                className="w-full max-h-48 object-cover rounded mt-2"
+                className="w-full max-h-48 object-cover rounded"
               />
             )}
-            <button
-              onClick={() => router.push(`/${marker._id}`)}
-              className="text-blue-500"
-            >
-              Ver detalles
-            </button>
           </li>
         ))}
       </ul>

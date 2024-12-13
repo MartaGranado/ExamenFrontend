@@ -11,35 +11,30 @@ const Map = dynamic(() => import("@/components/Map"), { ssr: false });
 
 export default function Home() {
   const { data: session, status } = useSession(); // Hook para manejar la sesión
-  const [address, setAddress] = useState("");
+  const [email, setEmail] = useState("");
   const [location, setLocation] = useState({ lat: 0, lon: 0 });
   const [marcadores, setMarcadores] = useState([]);
 
-  const handleSearch = async () => {
+  // Obtener los marcadores asociados a un correo electrónico
+  const fetchMarcadores = async (correo) => {
     try {
-      // Geocodificar la dirección ingresada
-      const geocodeResponse = await axios.get(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`
-      );
-      const { lat, lon } = geocodeResponse.data[0];
-      setLocation({ lat: parseFloat(lat), lon: parseFloat(lon) });
-
-      // Buscar marcadores próximos
-      const marcadoresResponse = await axios.get(`/api/marcadores?lat=${lat}&lon=${lon}`);
-      setMarcadores(marcadoresResponse.data);
+      const res = await axios.get(`/api/marcadores?email=${correo}`);
+      setMarcadores(res.data);
     } catch (error) {
-      console.error("Error al buscar marcadores:", error);
+      console.error("Error al obtener marcadores:", error);
     }
   };
 
-  // if (status === "loading") {
-  //   return <div>Cargando...</div>;
-  // }
+  useEffect(() => {
+    if (session?.user?.email) {
+      fetchMarcadores(session.user.email); // Cargar marcadores del usuario autenticado al inicio
+    }
+  }, [session]);
 
   if (!session) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="p-6 bg-grey-200 shadow-lg rounded-md max-w-lg text-center">
+        <div className="p-6 bg-gray-200 shadow-lg rounded-md max-w-lg text-center">
           <h1 className="text-2xl font-bold mb-4">Bienvenido a Mis Mapas</h1>
           <p className="mb-4">Inicia sesión para acceder al mapa y agregar tus ubicaciones.</p>
           <button
@@ -53,10 +48,14 @@ export default function Home() {
     );
   }
 
+  const esPropioCorreo = email === "" || email === session.user.email;
+
   return (
-    <div className="flex items-center justify-center h-screen">
-      <div className="p-6 bg-grey-200 shadow-lg rounded-md max-w-lg text-center ml-4">
-        <h1 className="text-2xl font-bold mb-4">Mis mapas</h1>
+    <div className="flex flex-col items-center justify-center h-screen">
+      <div className="p-6 bg-blue-950 shadow-lg rounded-md max-w-lg text-center">
+        <h1 className="text-2xl font-bold mb-4">
+          {esPropioCorreo ? "Mis mapas" : `Mapas de: ${email}`}
+        </h1>
         <div className="flex flex-col gap-4">
           <Link href={`/crear`}>
             <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
@@ -65,14 +64,14 @@ export default function Home() {
           </Link>
           <p>Ver mapa de:</p>
           <input
-            type="text"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            placeholder="Ingresa una dirección de correo"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Ingresa un correo electrónico"
             className="border p-2 w-full text-black rounded-md"
           />
           <button
-            onClick={handleSearch}
+            onClick={() => fetchMarcadores(email)}
             className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
           >
             Buscar

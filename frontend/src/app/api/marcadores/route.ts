@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
-import LugarVisitado from "@/models/LugarVisitado";
+import Marcador from "@/models/LugarVisitado";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 
-// Ruta para obtener lugares visitados por el usuario
 export async function GET(request: Request) {
   const session = await getServerSession(authOptions);
 
@@ -12,19 +11,23 @@ export async function GET(request: Request) {
     return NextResponse.json({ message: "No autenticado" }, { status: 401 });
   }
 
+  const url = new URL(request.url);
+  const email = url.searchParams.get("email") || session.user?.email;
+
+  if (!email) {
+    return NextResponse.json({ message: "No se proporcionó un correo válido" }, { status: 400 });
+  }
+
   try {
     await connectToDatabase();
-
-    // Obtener lugares visitados por el usuario
-    const lugares = await LugarVisitado.find({ usuario: session.user?.email });
-    return NextResponse.json(lugares);
+    const marcadores = await Marcador.find({ usuario: email });
+    return NextResponse.json(marcadores);
   } catch (error) {
-    console.error("Error al obtener lugares visitados:", error);
-    return NextResponse.json({ message: "Error al obtener lugares" }, { status: 500 });
+    console.error("Error al obtener marcadores:", error);
+    return NextResponse.json({ message: "Error al obtener marcadores" }, { status: 500 });
   }
 }
 
-// Ruta para agregar un nuevo lugar visitado
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
 
@@ -33,14 +36,14 @@ export async function POST(request: Request) {
   }
 
   const formData = await request.formData();
+  const nombre = formData.get("nombre")?.toString();
   const lugar = formData.get("lugar")?.toString();
 
-  if (!lugar) {
+  if (!nombre || !lugar) {
     return NextResponse.json({ message: "Faltan campos obligatorios" }, { status: 400 });
   }
 
   try {
-    // Geocodificación para obtener las coordenadas del lugar
     const geocodeResponse = await fetch(
       `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(lugar)}&format=json&limit=1`
     );
@@ -50,23 +53,23 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "No se encontraron coordenadas para el lugar" }, { status: 400 });
     }
 
-    const lat = parseFloat(geocodeData[0].lat);
-    const lon = parseFloat(geocodeData[0].lon);
+    const { lat, lon } = geocodeData[0];
 
     await connectToDatabase();
 
-    // Guardar el lugar en la base de datos
-    const nuevoLugar = new LugarVisitado({
+    const nuevoMarcador = new Marcador({
+      nombre,
       lugar,
-      lat,
-      lon,
-      usuario: session.user?.email,
+      lat: parseFloat(lat),
+      lon: parseFloat(lon),
+      usuario: session.user.email,
     });
-    await nuevoLugar.save();
 
-    return NextResponse.json({ message: "Lugar agregado con éxito" }, { status: 201 });
+    await nuevoMarcador.save();
+
+    return NextResponse.json({ message: "Marcador creado con éxito" }, { status: 201 });
   } catch (error) {
-    console.error("Error al agregar lugar:", error);
-    return NextResponse.json({ message: "Error al agregar lugar" }, { status: 500 });
+    console.error("Error al crear marcador:", error);
+    return NextResponse.json({ message: "Error interno del servidor" }, { status: 500 });
   }
 }
