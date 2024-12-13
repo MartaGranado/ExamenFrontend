@@ -10,6 +10,12 @@ import dynamic from "next/dynamic";
 const Map = dynamic(() => import("@/components/Map"), { ssr: false });
 
 export default function Home() {
+  interface Marcador {
+    imagen?: string; // Optional, depending on your data
+    [key: string]: any; // Add other properties as needed
+  }
+  
+  const [marker, setMarker] = useState<Marcador[]>([]);
   const { data: session, status } = useSession(); // Hook para manejar la sesión
   const [email, setEmail] = useState("");
   const [location, setLocation] = useState({ lat: 0, lon: 0 });
@@ -108,7 +114,7 @@ export default function Home() {
       <div className="mt-8 w-full max-w-5xl mx-auto">
         <h2 className="text-xl font-bold mb-4">Todas las imágenes</h2>
         <div className="flex gap-4 overflow-x-auto">
-          {marcadores
+          {marker
             .filter((marker) => marker.imagen && marker.imagen.trim() !== "")
             .map((marker, index) => (
               <img
