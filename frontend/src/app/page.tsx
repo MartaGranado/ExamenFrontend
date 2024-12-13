@@ -17,9 +17,9 @@ export default function Home() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null); // Estado para la imagen seleccionada
 
   // Obtener los marcadores asociados a un correo electrónico
-  const fetchMarcadores = async (correo) => {
+  const fetchMarcadores = async (email : string) => {
     try {
-      const res = await axios.get(`/api/marcadores?email=${correo}`);
+      const res = await axios.get(`/api/marcadores?email=${email}`);
       setMarcadores(res.data);
     } catch (error) {
       console.error("Error al obtener marcadores:", error);
